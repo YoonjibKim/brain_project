@@ -16,7 +16,6 @@ def analysis(_rhs_load_path=None, _mat_save_dir=None, _gamma_save_dir=None):
         print(f"--- [2단계] 고해상도 LFP/감마 분석 시작 ---")
         analyzer = GammaAnalyzer()
 
-        # 이로써 임의의 점선이 사라지고 전체 구간의 평균 파워가 산출됩니다.
         analyzer.analyze_gamma_bands(
             load_dir_path=_mat_save_dir,
             save_dir_path=_gamma_save_dir,
