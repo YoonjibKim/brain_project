@@ -14,13 +14,19 @@ def analysis(_rhs_load_path=None, _mat_save_dir=None, _gamma_save_dir=None, _fre
 
     # 1. 원본 데이터 추출 (RHS -> MAT)
     if _rhs_load_path and _mat_save_dir:
-        print(f"--- [1단계] 데이터 추출 시작: {_rhs_load_path} ---")
+        print(f"--- 데이터 추출 시작: {_rhs_load_path} ---")
         extractor = Extraction()
         extractor.convert_rhs_to_mat(_rhs_load_path, _mat_save_dir)
 
+    # 3. Raw Signal 스파이크 그래프 (시각적 확인용)
+    if _mat_save_dir and _frequency_path:
+        scanner = SpikePlotter()
+        scanner.plot_roi_raw(load_dir_path=_mat_save_dir, save_dir_path=_frequency_path, t_start=t_start, t_end=t_end)
+        print("--- 모든 채널 그래프 저장 완료 ---")
+
     # 2. 고해상도 LFP 및 감마 파워 분석
     if _mat_save_dir and _gamma_save_dir:
-        print(f"--- [2단계] 고해상도 LFP/감마 분석 시작 ---")
+        print(f"--- 고해상도 LFP/감마 분석 시작 ---")
         analyzer = GammaAnalyzer()
 
         analyzer.analyze_gamma_bands(
@@ -33,12 +39,6 @@ def analysis(_rhs_load_path=None, _mat_save_dir=None, _gamma_save_dir=None, _fre
             overlap_ratio=overlap_ratio
         )
         print(f"--- 분석 완료! 결과 확인: {_gamma_save_dir} ---")
-
-    # 3. Raw Signal 스파이크 그래프 (시각적 확인용)
-    if _mat_save_dir and _frequency_path:
-        scanner = SpikePlotter()
-        scanner.plot_roi_raw(load_dir_path=_mat_save_dir, save_dir_path=_frequency_path, t_start=t_start, t_end=t_end)
-        print("--- 모든 채널 그래프 저장 완료 ---")
 
 
 if __name__ == "__main__":
