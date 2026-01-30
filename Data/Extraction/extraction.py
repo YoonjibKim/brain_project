@@ -3,7 +3,6 @@ import struct
 import numpy as np
 import scipy.io as sio
 import sys
-from scipy.signal import iirnotch, lfilter
 
 
 class Extraction:
@@ -20,10 +19,6 @@ class Extraction:
             return data.decode('utf-16', errors='replace')
         except: # noqa
             return ""
-
-    def __apply_notch_filter(self, data, fs, f_notch=60.0, bw=10.0): # noqa
-        b, a = iirnotch(f_notch, f_notch / bw, fs)
-        return lfilter(b, a, data)
 
     def convert_rhs_to_mat(self, load_path, save_folder_path):
         if os.path.isfile(load_path):
@@ -68,7 +63,6 @@ class Extraction:
                     for _ in range(num_ch_in_group):
                         self.__read_qstring(fid)
                         self.__read_qstring(fid)  # names
-                        # --- 정밀 수정: 채널당 설정 데이터는 30바이트입니다 ---
                         _, _, sig_type, ch_enabled = struct.unpack('<4h', fid.read(8))
                         fid.read(22)  # 나머지 22바이트 스킵 (8+22=30)
 
@@ -88,7 +82,7 @@ class Extraction:
             filesize = os.path.getsize(filename)
             bytes_remaining = filesize - fid.tell()
 
-            # 매트랩 read_Intan_RHS2000_file_16ch.m의 bytes_per_block 로직
+            # 매트랩 bytes_per_block 로직
             bpb = 128 * 4  # Timestamp
             bpb += 128 * (2 + 2 + (2 if dc_saved else 0)) * num_amp  # Amp/Stim/DC
             bpb += 128 * 2 * num_adc  # ADC
